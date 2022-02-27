@@ -3,8 +3,6 @@
   "version": "1.0.0",
   "description": "Serverless TODO image app",
   "dependencies": {
-    "@types/axios": "^0.14.0",
-    "@types/http-errors": "^1.6.1",
     "aws-xray-sdk": "^2.2.0",
     "axios": "^0.18.0",
     "http-errors": "^1.7.2",
@@ -15,6 +13,8 @@
     "winston": "^3.2.1"
   },
   "devDependencies": {
+    "@types/axios": "^0.14.0",
+    "@types/http-errors": "^1.6.1",
     "@types/aws-lambda": "^8.10.17",
     "@types/jsonwebtoken": "^8.3.2",
     "@types/node": "^10.14.4",

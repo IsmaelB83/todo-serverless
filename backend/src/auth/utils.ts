@@ -1,5 +1,4 @@
 import { decode } from 'jsonwebtoken'
-
 import { JwtPayload } from './JwtPayload'
 
 /**
