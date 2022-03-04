@@ -1,6 +1,6 @@
 org: ibernal83
-app: todo-serverless
-service: todo-serverless
+app: todo
+service: todo
 frameworkVersion: '3'
 
 plugins:
@@ -21,9 +21,9 @@ provider:
     apiGateway: true
 
   environment:
-    TODOS_TABLE: Todos-${self:provider.stage}
-    TODOS_CREATED_AT_INDEX: Todos-CreatedAtIndex
-    ATTACHMENT_S3_BUCKET: Todos-images-ibernal-${self:provider.stage}
+    TODOS_TABLE: todo-${self:provider.stage}
+    TODOS_CREATED_AT_INDEX: todo-CreatedAtIndex
+    ATTACHMENT_S3_BUCKET: todo-ibernal-${self:provider.stage}
     SIGNED_URL_EXPIRATION: 300
 
   logs:
@@ -69,12 +69,14 @@ functions:
           cors: true
           authorizer: Auth
     iamRoleStatementsInherit: true
-    iamRoleStatementsName: GetTodos-Lambda-role
+    iamRoleStatementsName: Gettodo-Lambda-role
     iamRoleStatements:
       - Effect: Allow
         Action: 
+          - dynamodb:Query
           - dynamodb:Scan
         Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}
+
 
   # (DONE): Configure this function - 
   # Provide iamRoleStatements property. Decide the Actions and AWS Resource. 
@@ -123,8 +125,8 @@ functions:
     iamRoleStatements:
       - Effect: Allow
         Action: 
-          - dynamodb:Query
           - dynamodb:PutItem
+          - dynamodb:GetItem
         Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}
 
   # (DONE): Configure this function
@@ -137,12 +139,12 @@ functions:
           path: todos/{todoId}
           cors: true
     iamRoleStatementsInherit: true
-    iamRoleStatementsName: UpdateTodo-Lambda-role
+    iamRoleStatementsName: DeleteTodo-Lambda-role
     iamRoleStatements:
       - Effect: Allow
         Action: 
-          - dynamodb:Query
           - dynamodb:DeleteItem
+          - dynamodb:GetItem
         Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}
 
   # (DONE): Configure this function
@@ -193,24 +195,14 @@ resources:
       Type: AWS::DynamoDB::Table
       Properties:
         AttributeDefinitions:
-          - AttributeName: todoId
-            AttributeType: S
-          - AttributeName: createdAt
-            AttributeType: S
-          - AttributeName: name
-            AttributeType: S
-          - AttributeName: dueDate
-            AttributeType: S
-          - AttributeName: done
-            AttributeType: S
-          - AttributeName: attachmentUrl
-            AttributeType: S
           - AttributeName: userId
             AttributeType: S
-        KeySchema:
           - AttributeName: todoId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: userId
             KeyType: HASH
-          - AttributeName: createdAt
+          - AttributeName: todoId
             KeyType: RANGE
         BillingMode: PAY_PER_REQUEST
         GlobalSecondaryIndexes:
@@ -220,6 +212,7 @@ resources:
                 KeyType: HASH
             Projection:
               ProjectionType: ALL
+        TableName: ${self:provider.environment.TODOS_TABLE}
 
     # (DONE): Complete the bucket properties below. 
     # Do not forget to add the CorsConfiguration propoerty
