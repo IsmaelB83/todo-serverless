@@ -1,4 +1,6 @@
+// Node modules
 import { decode } from 'jsonwebtoken'
+// Own modules
 import { JwtPayload } from './JwtPayload'
 
 /**
