@@ -10,15 +10,12 @@ import { getUserId } from '../utils';
 //import { createTodo } from '../../businessLogic/todos'
 import { createLogger } from '../../utils/logger'
 
-const logger = createLogger('auth')
-
 // Constants
 const DB_TABLE: string = process.env.TODOS_TABLE!;
 const DOC_CLIENT = new AWS.DynamoDB.DocumentClient();
+const LOGGER = createLogger('auth')
 
-/**
- * Handler function to create a todo
- */
+// Handler function to create a todo
 export const handler = middy(
   async (event: APIGatewayProxyEvent, context: Context): Promise<APIGatewayProxyResult> => {
     
@@ -31,12 +28,12 @@ export const handler = middy(
         Item: {
           todoId: context.awsRequestId,
           userId: getUserId(event),
-          createAt: new Date().toISOString(),
+          createdAt: new Date().toISOString(),
           ...newTodo
         }
       }
       // Log
-      logger.info('Creating todo', JSON.stringify(params.Item))
+      LOGGER.info('Creating todo', JSON.stringify(params.Item))
       // Put object
       await DOC_CLIENT.put(params).promise()
       // Return OK
@@ -49,7 +46,7 @@ export const handler = middy(
       } 
     } catch (e) {
       // Log
-      logger.error('Error creating todo', { error: e.message })
+      LOGGER.error('Error creating todo', { error: e.message })
       // Return KO
       return {
         statusCode: 500,
