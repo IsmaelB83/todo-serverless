@@ -49,17 +49,17 @@ export const handler = middy(
           ConditionExpression: "todoId = :todoId",
           UpdateExpression: "set #name = :name, dueDate=:dueDate, done=:done, attachmentUrl = :attachmentUrl",
           ExpressionAttributeValues:{
-            ":name": updatedTodo.name,
-            ":dueDate": updatedTodo.dueDate,
-            ":done": updatedTodo.done,
+            ":name": updatedTodo.name || todo.name,
+            ":dueDate": updatedTodo.dueDate || todo.dueDate,
+            ":done": updatedTodo.done || todo.done,
             ":todoId": todoId,
-            ":attachmentUrl": updatedTodo.attachmentUrl
+            ":attachmentUrl": updatedTodo.attachmentUrl || todo.attachmentUrl
           },
           ExpressionAttributeNames: {
             "#name": "name"
           }
         }).promise()
-        LOGGER.info('Todo updated, ', JSON.stringify(todo));
+        LOGGER.info('Todo updated, ', JSON.stringify(updatedTodo));
         // Return OK
         return {
           statusCode: 200,
