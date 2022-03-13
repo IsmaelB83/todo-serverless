@@ -52,7 +52,7 @@ export const handler = middy(
           ExpressionAttributeValues:{
             ":name": updatedTodo.name || todo.name,
             ":dueDate": updatedTodo.dueDate || todo.dueDate,
-            ":done": updatedTodo.done || todo.done,
+            ":done": updatedTodo.done,
             ":todoId": todoId,
             ":attachmentUrl": updatedTodo.attachmentUrl || todo.attachmentUrl || ''
           },
@@ -67,7 +67,6 @@ export const handler = middy(
           headers: { 'Access-Control-Allow-Origin': '*' },
           body: JSON.stringify({
             Result: 'Ok. Todo updated',
-            Item: todo
           })
         }
       } 
