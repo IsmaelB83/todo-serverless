@@ -27,9 +27,6 @@ export const handler = middy(
         Key: todoId,
         Expires: EXPIRATION
       })
-      // Upload attachemnt URL on dynamo 
-      // (better approach would be to connect a lambda to the S3 event, and update the attachment url once the client upload the image to the bucket)
-      console.log('PENDING UPDATE DYNAMO');
       // Return Ok
       return {
           statusCode: 200,

@@ -24,6 +24,7 @@ provider:
     TODOS_TABLE: todo-${self:provider.stage}
     TODOS_TABLE_INDEX: todo-index-${self:provider.stage}
     ATTACHMENT_S3_BUCKET: todo-ibernal-${self:provider.stage}
+    ATTACHMENT_S3_URL: https://todo-ibernal-${self:provider.stage}.s3.amazonaws.com/
     SIGNED_URL_EXPIRATION: 300
     JWKSURL: https://dev-wbbbogs3.us.auth0.com/.well-known/jwks.json
 

@@ -22,6 +22,7 @@ export const handler = middy(
     try {
       // Todo object
       const newTodo: CreateTodoRequest = JSON.parse(event.body)
+      const attachmentUrl = `${process.env.ATTACHMENT_S3_URL}${context.awsRequestId}`;
       // Dynamo command
       const params = {
         TableName: DB_TABLE,
@@ -29,6 +30,7 @@ export const handler = middy(
           todoId: context.awsRequestId,
           userId: getUserId(event),
           createdAt: new Date().toISOString(),
+          attachmentUrl, 
           ...newTodo
         }
       }
