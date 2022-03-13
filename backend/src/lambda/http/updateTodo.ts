@@ -38,6 +38,7 @@ export const handler = middy(
       LOGGER.info('Todo to be updated, ', JSON.stringify(result.Items));
       // Check user id of token is the same as user in bearer
       if (result.Items && result.Items[0].userId === userId) {
+        // Constants
         const todo = result.Items[0];
         // Update token
         await DOC_CLIENT.update({
@@ -53,7 +54,7 @@ export const handler = middy(
             ":dueDate": updatedTodo.dueDate || todo.dueDate,
             ":done": updatedTodo.done || todo.done,
             ":todoId": todoId,
-            ":attachmentUrl": updatedTodo.attachmentUrl || todo.attachmentUrl
+            ":attachmentUrl": updatedTodo.attachmentUrl || todo.attachmentUrl || ''
           },
           ExpressionAttributeNames: {
             "#name": "name"

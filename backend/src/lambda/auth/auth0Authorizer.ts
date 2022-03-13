@@ -1,25 +1,26 @@
 // Node modules
 import { CustomAuthorizerEvent, CustomAuthorizerResult } from 'aws-lambda'
-import 'source-map-support/register'
 import { verify } from 'jsonwebtoken'
+import 'source-map-support/register'
 import Axios from 'axios'
 // Own modules
 import { createLogger } from '../../utils/logger'
 import { JwtPayload } from '../../auth/JwtPayload'
 
-const logger = createLogger('auth')
-
-// URL to download a certificate that can be used to verify JWT token signature (Auth0 -> Show Advanced Settings -> Endpoints -> JSON Web Key Set)
-const jwksUrl = 'https://dev-wbbbogs3.us.auth0.com/.well-known/jwks.json'
+// Constants
+const LOGGER = createLogger('auth')
+const JWKSURL = process.env.JWKSURL!
 
 /**
  * Handler to authorize request
  */
 export const handler = async ( event: CustomAuthorizerEvent): Promise<CustomAuthorizerResult> => {
-  logger.info('Authorizing a user', event.authorizationToken)
+  LOGGER.info('Authorizing a user', event.authorizationToken)
   try {
+    // Constants
     const jwtToken = await verifyToken(event.authorizationToken)
-    logger.info('User was authorized', jwtToken)
+    LOGGER.info('User was authorized', jwtToken)
+    // Return OK
     return {
       principalId: jwtToken.sub,
       policyDocument: {
@@ -34,7 +35,9 @@ export const handler = async ( event: CustomAuthorizerEvent): Promise<CustomAuth
       }
     }
   } catch (e) {
-    logger.error('User not authorized', { error: e.message })
+    // Log
+    LOGGER.error('User not authorized', { error: e.message })
+    // Return KO
     return {
       principalId: 'user',
       policyDocument: {
@@ -58,7 +61,7 @@ export const handler = async ( event: CustomAuthorizerEvent): Promise<CustomAuth
  */
 async function verifyToken(authHeader: string): Promise<JwtPayload> {
     // Download certificate
-    const response = await Axios.get(jwksUrl);
+    const response = await Axios.get(JWKSURL);
     const pemData = response['data']['keys'][0]['x5c'][0];
     const cert = `-----BEGIN CERTIFICATE-----\n${pemData}\n-----END CERTIFICATE-----`;
     console.log(cert);
@@ -67,6 +70,11 @@ async function verifyToken(authHeader: string): Promise<JwtPayload> {
     return verify(token, cert, { algorithms: ['RS256'] }) as JwtPayload
 }
 
+/**
+ * Obtain bearer token from auth header
+ * @param authHeader Authentication header
+ * @returns JWT Token
+ */
 function getToken(authHeader: string): string {
   // Check auth headers
   if (!authHeader) throw new Error('No authentication header')
@@ -74,6 +82,6 @@ function getToken(authHeader: string): string {
   // Split auth header ('bearer xxx') and return token ('xxx') 
   const split = authHeader.split(' ')
   const token = split[1]
-  logger.info('Token split: ', token);
+  LOGGER.info('Token split: ', token);
   return token
 }

@@ -1,4 +1,6 @@
+// Node modules
 import { APIGatewayProxyEvent } from "aws-lambda";
+// Own modules
 import { parseUserId } from "../auth/utils";
 
 /**

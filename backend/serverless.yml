@@ -25,6 +25,7 @@ provider:
     TODOS_TABLE_INDEX: todo-index-${self:provider.stage}
     ATTACHMENT_S3_BUCKET: todo-ibernal-${self:provider.stage}
     SIGNED_URL_EXPIRATION: 300
+    JWKSURL: https://dev-wbbbogs3.us.auth0.com/.well-known/jwks.json
 
   logs:
     restApi: true
