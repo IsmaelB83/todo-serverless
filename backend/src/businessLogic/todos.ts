@@ -3,8 +3,8 @@
 import { TodoItem } from '../models/TodoItem'
 import { CreateTodoRequest } from '../requests/CreateTodoRequest'
 import { UpdateTodoRequest } from '../requests/UpdateTodoRequest'
-import { TodosAccess } from './todosAcess'
-import { getAttachmentUploadUrl } from './attachmentUtils'
+import { TodosAccess } from '../dataLayer/todosAcess'
+import { getAttachmentUploadUrl } from '../dataLayer/attachmentUtils'
 
 // Constants
 const TODOS_ACCESS = new TodosAccess()

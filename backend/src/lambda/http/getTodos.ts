@@ -4,7 +4,7 @@ import { cors } from 'middy/middlewares'
 import 'source-map-support/register'
 import * as middy from 'middy'
 // Own modules
-import { getTodosForUser } from '../../helpers/todos'
+import { getTodosForUser } from '../../businessLogic/todos'
 import { createLogger } from '../../utils/logger'
 import { getUserId } from '../utils'
 
