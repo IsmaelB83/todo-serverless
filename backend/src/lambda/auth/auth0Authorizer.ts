@@ -15,12 +15,9 @@ const JWKSURL = process.env.JWKSURL!
  * Handler to authorize request
  */
 export const handler = async ( event: CustomAuthorizerEvent): Promise<CustomAuthorizerResult> => {
-  LOGGER.info('Authorizing a user', event.authorizationToken)
   try {
-    // Constants
     const jwtToken = await verifyToken(event.authorizationToken)
     LOGGER.info('User was authorized', jwtToken)
-    // Return OK
     return {
       principalId: jwtToken.sub,
       policyDocument: {
@@ -35,9 +32,7 @@ export const handler = async ( event: CustomAuthorizerEvent): Promise<CustomAuth
       }
     }
   } catch (e) {
-    // Log
     LOGGER.error('User not authorized', { error: e.message })
-    // Return KO
     return {
       principalId: 'user',
       policyDocument: {
@@ -64,7 +59,6 @@ async function verifyToken(authHeader: string): Promise<JwtPayload> {
     const response = await Axios.get(JWKSURL);
     const pemData = response['data']['keys'][0]['x5c'][0];
     const cert = `-----BEGIN CERTIFICATE-----\n${pemData}\n-----END CERTIFICATE-----`;
-    console.log(cert);
     // Verify token against cert
     const token = getToken(authHeader);
     return verify(token, cert, { algorithms: ['RS256'] }) as JwtPayload

@@ -2,16 +2,13 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
 import { cors, httpErrorHandler } from 'middy/middlewares'
 import 'source-map-support/register'
-import * as AWS from 'aws-sdk'
 import * as middy from 'middy'
 // Own modules
-//import { createAttachmentPresignedUrl } from '../../businessLogic/todos'
+import { createAttachmentPresignedUrl } from '../../helpers/todos'
 import { createLogger } from '../../utils/logger'
+import { getUserId } from '../utils'
 
 // Constants
-const S3 = new AWS.S3({ signatureVersion: 'v4' });
-const BUCKET: string = process.env.ATTACHMENT_S3_BUCKET!;
-const EXPIRATION: number = parseInt(process.env.SIGNED_URL_EXPIRATION || "300");
 const LOGGER = createLogger('getTodos')
 
 // Handler function to generate a pre-signed url to upload an image to the bucket
@@ -20,27 +17,19 @@ export const handler = middy(
     try {
       // Constants
       const todoId = event.pathParameters.todoId
-      LOGGER.debug('Generate pre-signed url for todo: ', todoId)
       // Generate pre-signed url
-      const uploadUrl = await S3.getSignedUrl('putObject', {
-        Bucket: BUCKET,
-        Key: todoId,
-        Expires: EXPIRATION
-      })
+      const uploadUrl = await createAttachmentPresignedUrl(todoId, getUserId(event))
       // Return Ok
       return {
           statusCode: 200,
-          headers: {
-              'Access-Control-Allow-Origin': '*',
-              'Access-Control-Allow-Credentials': true
-          },
+          headers: { 'Access-Control-Allow-Origin': '*' },
           body: JSON.stringify({
               uploadUrl
           })
       }     
     } catch (e) {
       // Log
-      LOGGER.error('Error deleting todo', { error: e.message })
+      LOGGER.error('Error generating presigned url', { error: e.message })
       // Return KO
       return {
         statusCode: 500,
